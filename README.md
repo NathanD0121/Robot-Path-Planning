@@ -1,3 +1,3 @@
-# Robotics_Assignment3
+# Robot Path Planning
 
-This focuses on robot path planning
+This project focuses on robot path planning and uses ROS
