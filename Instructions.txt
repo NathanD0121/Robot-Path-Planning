@@ -1,0 +1,13 @@
+Instructions
+-Install ROS
+-Open a terminal
+-Commands:
+	-roscore
+-Open a new terminal
+-Commands: 
+	-cd catkin_ws
+	-source devel/setup.bash
+	-roslaunch Path-Planning move_base.launch
+-Open a new terminal
+-Commands:
+	-python goto2.py

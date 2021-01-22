@@ -1,0 +1,21 @@
+<launch>
+  <master auto="start"/>
+  
+  <!-- Run the map server  -->
+  <arg name="map_file" default="$(find zappfinal)/data/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+  
+  <!-- Start Stage simulator with a given environment -->
+  <arg name="world_name" value="$(find zappfinal)/data/mapzapp.world"/>
+  <node name="Stage" pkg="stage_ros" type="stageros" args="$(arg world_name)" ></node>
+  
+  <!--- Run AMCL
+  <include file="$(find amcl)/amcl/amcl.launch" />
+   --> 
+  <!-- Run python script 
+  <node name="listener_node" pkg="zappfinal" type="costmap.py" output="screen"></node>
+  -->
+  <!-- RVIZ to view the visualization 
+  <node name="RVIZ" pkg="rviz" type="rviz" args=" -d $(find zappfinal)/rviz/zappfinal.rviz" />
+  -->
+</launch>

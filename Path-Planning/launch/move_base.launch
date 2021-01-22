@@ -1,0 +1,57 @@
+<launch>
+  <master auto="start"/>
+  <param name="/use_sim_time" value="true"/>
+  <!-- Run the map server  -->
+  <arg name="map_file" default="$(find zappfinal)/data/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+  
+  <!-- Start Stage simulator with a given environment -->
+  <arg name="world_name" value="$(find zappfinal)/data/mapzapp.world"/>
+  <node name="Stage" pkg="stage_ros" type="stageros" args="$(arg world_name)" ></node>  
+
+
+  <!-- Place map frame at odometry frame -->
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
+      args="0 0 0 0 0 0 map odom 100"/>
+
+  <!-- Localization -->
+  <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <remap from="scan" to="base_scan"/>
+    <param name="odom_frame_id" value="odom"/>
+    <param name="odom_model_type" value="omni"/>
+    <param name="base_frame_id" value="base_link"/>
+    <param name="update_min_d" value="0.05"/>
+    <param name="update_min_a" value="0.05"/>
+  </node>
+
+  <!--include file="$(find amcl)/examples/amcl_omni.launch"/-->
+
+
+
+  <!-- Move base -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="use_dijkstra" value="False"/>
+    <param name="use_grid_path" value="True"/>
+    <rosparam file="$(find zappfinal)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find zappfinal)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find zappfinal)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find zappfinal)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find zappfinal)/config/base_local_planner_params.yaml" command="load" />
+    
+    <remap from="cmd_vel" to="cmd_vel"/>
+    <remap from="odom" to="odom"/>
+    <remap from="scan" to="base_scan"/>
+    <param name="move_base/DWAPlannerROS/yaw_goal_tolerance" value="0.05"/>
+    <param name="move_base/DWAPlannerROS/xy_goal_tolerance" value="0.05"/></node>
+ 
+  <!-- RVIZ to view the visualization   -->
+  <node name="RVIZ" pkg="rviz" type="rviz" args=" -d $(find zappfinal)/rviz/Rviz.rviz" />
+  
+  <!-- Run python scripts -->
+  <node name="marker_basic_node" pkg="zappfinal" type="createmarker.py" output="screen"></node>
+  <node name="check_hider" pkg="zappfinal" type="checkhider.py" output="screen"></node>
+  <!-- <node name="movebase_searcher" pkg="zappfinal" type="goto2.py" output="screen"></node> -->
+
+
+</launch>
+
